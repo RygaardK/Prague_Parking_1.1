@@ -9,6 +9,7 @@ namespace Prague_Buss_Parking
 	{
 
 		static string[] ParkingList = new string[100];
+		static string[] ParkingTicket = new string[200];
 
 		static readonly string Logo =
 							  "  ██████╗ ██████╗  █████╗  ██████╗ ██╗   ██╗███████╗    ██████╗  █████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ ██████╗   \n" +
@@ -120,11 +121,14 @@ namespace Prague_Buss_Parking
 			string userInput = Console.ReadLine().ToUpper();
 			if (InputControl(userInput) && SearchIndexOf(userInput) < 0)
 			{
-				if (IsNull() >= 0)
+				int index;
+				if (IsNull() >= 0 && GetTicket(out index))
 				{
+					DateTime now = DateTime.Now;
 					int mySpot = IsNull();
 					Console.WriteLine($"We did park your vehicle on: {mySpot + 1}, with: {userInput}.");
 					ParkingList[mySpot] = "CAR#" + userInput;
+					ParkingTicket[index] = userInput + " " + now;
 					Console.WriteLine("Press a key to continue!");
 					Console.ReadKey();
 				}
@@ -148,14 +152,17 @@ namespace Prague_Buss_Parking
 		{
 			Console.WriteLine("Write your license plate number, 4-10 (A-Z & 0-9)");
 			string userInput = Console.ReadLine().ToUpper();
-			if (InputControl(userInput) && SearchIndexOf(userInput) < 0)
+			int index;
+			if (InputControl(userInput) && SearchIndexOf(userInput) < 0 && GetTicket(out index))
 			{
-
+				DateTime now = DateTime.Now;
 				if (HasMC() >= 0)
 				{
 					int mySpot = HasMC();
-					ParkingList[HasMC()] = ParkingList[HasMC()] + " / MC#" + userInput;
+					ParkingList[mySpot] = ParkingList[mySpot] + " / MC#" + userInput;
+					ParkingTicket[index] = userInput + " " + now;
 					Console.WriteLine($"We did find a spot on: {mySpot + 1}, and now your: {userInput}, is parked there.");
+					Console.WriteLine("TimeStamp: " + now);
 					Console.WriteLine("Press a key to continue!");
 					Console.ReadKey();
 				}
@@ -163,7 +170,9 @@ namespace Prague_Buss_Parking
 				{
 					int mySpot = IsNull();
 					ParkingList[mySpot] = "MC#" + userInput;
+					ParkingTicket[index] = userInput + " " + now;
 					Console.WriteLine($"We did find a spot on: {mySpot + 1}, and now your: {userInput}, is parked there.");
+					Console.WriteLine("TimeStamp: " + now);
 					Console.WriteLine("Press a key to continue!");
 					Console.ReadKey();
 				}
@@ -253,9 +262,9 @@ namespace Prague_Buss_Parking
 				{
 					if (ParkingList[indexOF].Contains("/"))
 					{
+						string[] vehicle = ParkingList[indexOF].Split(" / ");
 						if (ParkingList[number] != null && ParkingList[number].Contains("MC#"))
 						{
-							string[] vehicle = ParkingList[indexOF].Split(" / ");
 							if (vehicle[0] == "MC#" + userInput)
 							{
 								ParkingList[indexOF] = vehicle[1];
@@ -269,7 +278,6 @@ namespace Prague_Buss_Parking
 						}
 						else
 						{
-							string[] vehicle = ParkingList[indexOF].Split(" / ");
 							if (vehicle[0] == "MC#" + userInput)
 							{
 								ParkingList[indexOF] = vehicle[1];
@@ -307,56 +315,65 @@ namespace Prague_Buss_Parking
 		}//Done
 		static void CheckOut()
 		{
+			Console.WriteLine("Write your license plate number, 4-10 (A-Z & 0-9)");
+			string userInput = Console.ReadLine().ToUpper();
+			if (InputControl(userInput) && SearchIndexOf(userInput) >= 0)
 			{
-				Console.WriteLine("Write your license plate number, 4-10 (A-Z & 0-9)");
-				string userInput = Console.ReadLine().ToUpper();
-				if (InputControl(userInput) && SearchIndexOf(userInput) >= 0)
+				DateTime now = DateTime.Now;
+				TimeSpan interval = new TimeSpan();
+				int myIndex = SearchIndexOf(userInput);
+				string myTime;
+				int myTicket = SearchTicket(userInput, out myTime);
+				DateTime checkInDate = DateTime.Parse(myTime);
+				Console.WriteLine("Removing: " + userInput + ", on: " + myIndex);
+				Console.WriteLine("Press a key to continue!");
+				Console.ReadKey();
+				if (VehicleType(userInput) == "MC#")
 				{
-					Console.WriteLine("Removing: " + userInput + ", on: " + SearchIndexOf(userInput));
-					Console.WriteLine("Press a key to continue!");
-					Console.ReadKey();
-					if (VehicleType(userInput) == "MC#")
+					if (ParkingList[myIndex].Contains("/"))
 					{
-						if (ParkingList[SearchIndexOf(userInput)].Contains("/"))
-						{
-							string[] vehicle = ParkingList[SearchIndexOf(userInput)].Split(" / ");
-							if (vehicle[0] == "MC#" + userInput)
-							{
-								ParkingList[SearchIndexOf(userInput)] = vehicle[1];/// text vad som händer
-								Console.WriteLine("Press a key to continue!");
-								Console.ReadKey();
-							}
-							else
-							{
-								ParkingList[SearchIndexOf(userInput)] = vehicle[0];/// text vad som händer
-								Console.WriteLine("Press a key to continue!");
-								Console.ReadKey();
-							}
+						string[] vehicle = ParkingList[myIndex].Split(" / ");
+						interval = now - checkInDate;
+						if (vehicle[0] == "MC#" + userInput)
+						{ 
+							ParkingList[myIndex] = vehicle[1];
 						}
 						else
 						{
-							ParkingList[SearchIndexOf(userInput)] = null;/// text vad som händer
-							Console.WriteLine("Press a key to continue!");
-							Console.ReadKey();
+							ParkingList[myIndex] = vehicle[0];
 						}
+						ParkingTicket[myTicket] = null;
+						Console.WriteLine($"You have been parked for: {interval}");
+						Console.WriteLine($"Removing: {userInput}, on: {myIndex}");
+						Console.WriteLine("Press a key to continue!");
+						Console.ReadKey();
 					}
-					else if (VehicleType(userInput) == "CAR#")
+					else
 					{
-						Console.WriteLine("Removing: " + userInput + ", on: " + SearchIndexOf(userInput));
-						ParkingList[SearchIndexOf(userInput)] = null;
+						ParkingTicket[myTicket] = null;
+						Console.WriteLine($"You have been parked for: {interval}");
 						Console.WriteLine("Press a key to continue!");
 						Console.ReadKey();
 					}
 				}
-				else
+				else if (VehicleType(userInput) == "CAR#")
 				{
-					Console.WriteLine("Either you did not use the correct format (a-z/A-Z/0-9) or your vehicle is NOT parked here!");
+					ParkingTicket[myTicket] = null;
+					ParkingList[myIndex] = null;
+					Console.WriteLine($"You have been parked for: {interval}");
+					Console.WriteLine($"Removing: {userInput}, on: {myIndex}");
 					Console.WriteLine("Press a key to continue!");
 					Console.ReadKey();
 				}
-				MainMenu();
 			}
-		}// Done, need some text ofc.
+			else
+			{
+				Console.WriteLine("Either you did not use the correct format (a-z/A-Z/0-9) or your vehicle is NOT parked here!");
+				Console.WriteLine("Press a key to continue!");
+				Console.ReadKey();
+			}
+			MainMenu();
+		}//Done
 		static string VehicleType(string userInput)
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
@@ -461,6 +478,33 @@ namespace Prague_Buss_Parking
 			}
 			return false;
 		}//Checks if the SPECIFIC index is occupied by 2 MC or 1 Car
+		static bool GetTicket(out int index)
+		{
+			for (int i = 0; i < ParkingTicket.Length; i++)
+			{
+				if (ParkingTicket[i] == null)
+				{
+					index = i;
+					return true;
+				}
+			}
+			index = -1;
+			return false;
+		}//Checks first of null and returns the value in ParkingTicket[] or false and -1.
+		static int SearchTicket(string userInput, out string now)
+		{
+			for (int i = 0; i < ParkingTicket.Length; i++)
+			{
+				if (ParkingTicket[i] != null && ParkingTicket[i].StartsWith(userInput))
+				{
+					string dateTmp = ParkingTicket[i].Replace(userInput + " ", "");
+					now = dateTmp;
+					return i;
+				}
+			}
+			now = "";
+			return -1;
+		}
 		static void PlaceHolder()
 		{
 			ParkingList[0] = "CAR#ABC123";
