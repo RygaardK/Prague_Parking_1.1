@@ -39,7 +39,6 @@ namespace Prague_Buss_Parking
 			Console.WriteLine("3) Checkout a Vehicle");
 			Console.WriteLine("4) Show all Vehicles");
 			Console.WriteLine("5) Search for my Vehicle");
-			Console.WriteLine("8) PlaceHolder's");
 			Console.WriteLine("9) Exit");
 			Console.Write("\n Select an option: ");
 			int menuInput;
@@ -61,9 +60,6 @@ namespace Prague_Buss_Parking
 						break;
 					case 5:
 						SearchVehicles();
-						break;
-					case 8:
-						PlaceHolder();
 						break;
 					case 9:
 						return 9;//exit
@@ -127,6 +123,7 @@ namespace Prague_Buss_Parking
 					DateTime now = DateTime.Now;
 					int mySpot = IsNull();
 					Console.WriteLine($"We did park your vehicle on: {mySpot + 1}, with: {userInput}.");
+					Console.WriteLine($"Time & Date: {now}");
 					ParkingList[mySpot] = "CAR#" + userInput;
 					ParkingTicket[index] = userInput + " " + now;
 					Console.WriteLine("Press a key to continue!");
@@ -325,9 +322,6 @@ namespace Prague_Buss_Parking
 				string myTime;
 				int myTicket = SearchTicket(userInput, out myTime);
 				DateTime checkInDate = DateTime.Parse(myTime);
-				Console.WriteLine("Removing: " + userInput + ", on: " + myIndex);
-				Console.WriteLine("Press a key to continue!");
-				Console.ReadKey();
 				if (VehicleType(userInput) == "MC#")
 				{
 					if (ParkingList[myIndex].Contains("/"))
@@ -343,28 +337,25 @@ namespace Prague_Buss_Parking
 							ParkingList[myIndex] = vehicle[0];
 						}
 						ParkingTicket[myTicket] = null;
-						Console.WriteLine($"You have been parked for: {interval}");
-						Console.WriteLine($"Removing: {userInput}, on: {myIndex}");
+
+
 						Console.WriteLine("Press a key to continue!");
 						Console.ReadKey();
 					}
 					else
 					{
 						ParkingTicket[myTicket] = null;
-						Console.WriteLine($"You have been parked for: {interval}");
-						Console.WriteLine("Press a key to continue!");
-						Console.ReadKey();
 					}
 				}
 				else if (VehicleType(userInput) == "CAR#")
 				{
 					ParkingTicket[myTicket] = null;
 					ParkingList[myIndex] = null;
-					Console.WriteLine($"You have been parked for: {interval}");
-					Console.WriteLine($"Removing: {userInput}, on: {myIndex}");
-					Console.WriteLine("Press a key to continue!");
-					Console.ReadKey();
 				}
+				Console.WriteLine($"Removing: {userInput}, on: {myIndex +1}");
+				Console.WriteLine($"You have been parked for: {interval}");
+				Console.WriteLine("Press a key to continue!");
+				Console.ReadKey();
 			}
 			else
 			{
@@ -505,12 +496,6 @@ namespace Prague_Buss_Parking
 			now = "";
 			return -1;
 		}
-		static void PlaceHolder()
-		{
-			ParkingList[0] = "CAR#ABC123";
-			ParkingList[1] = "MC#BBB123 / MC#CCC321";
-			ParkingList[2] = "MC#AAA123";
-			ParkingList[3] = "CAR#CCC123";
-		}//Just put some temp Vehicles in the list to work with.
+		
 	}
 }
