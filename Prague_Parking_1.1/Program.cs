@@ -144,7 +144,7 @@ namespace Prague_Buss_Parking
 			}
 			MainMenu();
 
-		}// Done, needs some text for the ticket and Date reg.
+		}// Done
 		public static void AddMC()
 		{
 			Console.WriteLine("Write your license plate number, 4-10 (A-Z & 0-9)");
@@ -181,7 +181,7 @@ namespace Prague_Buss_Parking
 				Console.ReadKey();
 			}
 			MainMenu();
-		}// Done, needs some text for the ticket and Date reg.
+		}// Done
 		public static void SearchVehicles()
 		{
 			Console.WriteLine("Write your license plate number, 4-10 (A-Z & 0-9)");
@@ -379,7 +379,7 @@ namespace Prague_Buss_Parking
 				}
 			}
 			return "null";
-		}//Done should be a output on SearchIndexOf.
+		}//Checks the Vehicle type e.g. "CAR" or "MC"
 		static bool InputControl(string input)
 		{
 			string input_Reg = input;
@@ -393,7 +393,7 @@ namespace Prague_Buss_Parking
 			{
 				return false;
 			}
-		}//Controls if the INPUT is Correct. -- VG 3. "Säkra upp användarinput"
+		}//Controls if the INPUT is the correct format. -- VG 3. "Säkra upp användarinput"
 		static int SearchIndexOf(string userInput)
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
@@ -431,7 +431,7 @@ namespace Prague_Buss_Parking
 				}
 			}
 			return -1;
-		}//Strict control, not a contain, returns the index.
+		}//Strict control on a search of registration number, returns the index.
 		static int HasMC()
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
@@ -442,7 +442,7 @@ namespace Prague_Buss_Parking
 				}
 			}
 			return -1;
-		}//Checks the index of first SOLO MC
+		}//Just returns the index of the first SOLO MC in the list or returns -1.
 		static int IsNull()
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
@@ -457,7 +457,7 @@ namespace Prague_Buss_Parking
 				}
 			}
 			return -1;
-		}//Checks the index of first NULL... should be bool and out index.
+		}//Just returns the index of the first Null in the list or returns -1.
 		static bool IsFull(int userInput)
 		{
 			if (ParkingList[userInput] != null)
@@ -495,7 +495,7 @@ namespace Prague_Buss_Parking
 			}
 			now = "";
 			return -1;
-		}
+		}//Checks for a ticket by registration number.
 		
 	}
 }
