@@ -544,14 +544,6 @@ namespace Prague_Buss_Parking
 			}
 			return -1;
 		}//Just returns the index of the first SOLO MC in the list or returns -1.
-		static bool HasMC(int index)
-		{
-			if (ParkingList[index] != null || !ParkingList[index].Contains("CAR#") || !ParkingList[index].Contains("/") && ParkingList[index].Contains("MC#"))
-			{
-				return true;
-			}
-			return false;
-		}
 		static int IsNull()
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
