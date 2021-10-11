@@ -37,8 +37,9 @@ namespace Prague_Buss_Parking
 			Console.WriteLine("1) Add a Vehicle");
 			Console.WriteLine("2) Move a Vehicle");
 			Console.WriteLine("3) Checkout a Vehicle");
-			Console.WriteLine("4) Show all Vehicles");
-			Console.WriteLine("5) Search for my Vehicle");
+			Console.WriteLine("4) Search for my Vehicle");
+			Console.WriteLine("5) Show all Vehicles");
+			Console.WriteLine("6) Show ticketlist");
 			Console.WriteLine("9) Exit");
 			Console.Write("\n Select an option: ");
 			int menuInput;
@@ -56,10 +57,13 @@ namespace Prague_Buss_Parking
 						CheckOut();
 						break;
 					case 4:
-						ShowVehicles();
+						SearchVehicle();
 						break;
 					case 5:
-						SearchVehicles();
+						ShowVehicles();
+						break;
+					case 6:
+						ShowAllTickets();
 						break;
 					case 9:
 						return 9;//exit
@@ -182,13 +186,13 @@ namespace Prague_Buss_Parking
 			}
 			MainMenu();
 		}// Done
-		public static void SearchVehicles()
+		public static void SearchVehicle()
 		{
 			Console.WriteLine("Write your license plate number, 4-10 (A-Z & 0-9)");
 			string userInput = Console.ReadLine().ToUpper();
 			if (InputControl(userInput) && SearchIndexOf(userInput) >= 0)
 			{
-				Console.WriteLine("Your car is placed on: " + (SearchIndexOf(userInput) + 1));
+				Console.WriteLine("Your Vehicle is placed on: " + (SearchIndexOf(userInput) + 1));
 				Console.WriteLine("Press a key to continue!");
 				Console.ReadKey();
 			}
@@ -230,10 +234,10 @@ namespace Prague_Buss_Parking
 					n++;
 				}
 			}
-			Console.WriteLine("\n\n... Press key to continue ...");
+			Console.WriteLine("\n\n Press a key to continue!");
 			Console.ReadKey();
 			Console.Clear();
-		}//Done -- VG 1. Visualisering av vad som finns på parkeringsplatsen.
+		}//Done															 -- VG 1. Visualisering av vad som finns på parkeringsplatsen.
 		static void ChangePlace()
 		{
 			Console.WriteLine("Write the registration number you wanna move.");
@@ -329,7 +333,7 @@ namespace Prague_Buss_Parking
 						string[] vehicle = ParkingList[myIndex].Split(" / ");
 						interval = now - checkInDate;
 						if (vehicle[0] == "MC#" + userInput)
-						{ 
+						{
 							ParkingList[myIndex] = vehicle[1];
 						}
 						else
@@ -352,7 +356,7 @@ namespace Prague_Buss_Parking
 					ParkingTicket[myTicket] = null;
 					ParkingList[myIndex] = null;
 				}
-				Console.WriteLine($"Removing: {userInput}, on: {myIndex +1}");
+				Console.WriteLine($"Removing: {userInput}, on: {myIndex + 1}");
 				Console.WriteLine($"You have been parked for: {interval}");
 				Console.WriteLine("Press a key to continue!");
 				Console.ReadKey();
@@ -393,7 +397,7 @@ namespace Prague_Buss_Parking
 			{
 				return false;
 			}
-		}//Controls if the INPUT is the correct format. -- VG 3. "Säkra upp användarinput"
+		}//Controls if the INPUT is the correct format.									-- VG 3. "Säkra upp användarinput"
 		static int SearchIndexOf(string userInput)
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
@@ -458,6 +462,24 @@ namespace Prague_Buss_Parking
 			}
 			return -1;
 		}//Just returns the index of the first Null in the list or returns -1.
+		static void ShowAllTickets()
+		{
+			int parkedVehicles = 0;
+			Console.WriteLine("Shows all the tickes in a long list:");
+			for (int i = 0; i < ParkingTicket.Length; i++)
+			{
+				if (ParkingTicket[i] != null)
+				{
+					parkedVehicles++;
+					Console.WriteLine($"[{i}]. \t {ParkingTicket[i]}");
+				}
+			}
+			Console.WriteLine($"It is {parkedVehicles} parked vehicles in this parking area.");
+			Console.WriteLine("\n\nPress a key to continue!");
+			Console.ReadKey();
+			MainMenu();
+
+		}//Prints out the TicketList and tells how many vehicles there is in the parking area.
 		static bool IsFull(int userInput)
 		{
 			if (ParkingList[userInput] != null)
@@ -496,6 +518,6 @@ namespace Prague_Buss_Parking
 			now = "";
 			return -1;
 		}//Checks for a ticket by registration number.
-		
+
 	}
 }
