@@ -234,6 +234,7 @@ namespace Prague_Buss_Parking
 					n++;
 				}
 			}
+			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine("\n\n Press a key to continue!");
 			Console.ReadKey();
 			Console.Clear();
@@ -245,23 +246,39 @@ namespace Prague_Buss_Parking
 			int indexOF = SearchIndexOf(userInput);
 			if (InputControl(userInput) && indexOF >= 0)
 			{
-				Console.WriteLine("That is a: " + VehicleType(userInput));
+				string myType = VehicleType(userInput);
+				Console.WriteLine("That is a: " + myType);
 				Console.WriteLine("Write your new Parking spot:");
 				int number;
 				bool newParking = int.TryParse(Console.ReadLine(), out number);
 				number--;
-				string myType = VehicleType(userInput);
 				if (myType == "MC#")
 				{
-					string regNum;// Just needed for Car function.
-					while (IsFull(number, out regNum) || number >= 99)
+					while ((number == indexOF || IsFull(number)) || number >= 99)
+					{
+						
+						Console.Clear();
+						ShowVehicles();
+						Console.WriteLine("If you wanna exit write 100");
+						Console.WriteLine(number + 1 + ": That spot was taken! Choose a new one: (Between 1 - 100)");
+						newParking = int.TryParse(Console.ReadLine(), out number);
+						number--;
+					}
+				}
+				else if (myType == "CAR#")
+				{
+					while (!IsNull(number) || number >= 99)
 					{
 						Console.Clear();
 						ShowVehicles();
 						Console.WriteLine("If you wanna exit write 100");
-						Console.WriteLine((number + 1) + ": That spot was taken! Choose a new one: (Between 1 - 100");
+						Console.WriteLine(number + 1 + ": That spot was taken! Choose a new one: (Between 1 - 100)");
 						newParking = int.TryParse(Console.ReadLine(), out number);
+						number--;
 					}
+				}
+				if (myType == "MC#")
+				{
 					if (ParkingList[indexOF].Contains("/"))
 					{
 						string[] vehicle = ParkingList[indexOF].Split(" / ");
@@ -294,27 +311,21 @@ namespace Prague_Buss_Parking
 					}
 					else
 					{
-						ParkingList[number] = ParkingList[indexOF];
+						ParkingList[number] = ParkingList[indexOF];//skriver över sig själv, lämnar while loop trots att jag försöker hitta en kombo som låser den från att flytta en singel MC från och till samma plats.
 						ParkingList[indexOF] = null;
 					}
+					Console.WriteLine($"We did move your: {myType}, to: {number + 1}");
+					Console.WriteLine("Press a key to continue!");
+					Console.ReadKey();
 				}
 				else if (myType == "CAR#")
 				{
-					string regNum;
-					while (IsFull(number, out regNum) || regNum.Contains("MC#") || number >= 99)
-					{
-						Console.Clear();
-						ShowVehicles();
-						Console.WriteLine("If you wanna exit write 100");
-						Console.WriteLine((number + 1) + ": That spot was taken! Choose a new one: (Between 1 - 100");
-						newParking = int.TryParse(Console.ReadLine(), out number);
-					}
 					ParkingList[number] = ParkingList[indexOF];
 					ParkingList[indexOF] = null;
+					Console.WriteLine($"We did move your: {myType}, to: {number + 1}");
+					Console.WriteLine("Press a key to continue!");
+					Console.ReadKey();
 				}
-				Console.WriteLine($"We did move your: {myType}, to: {(number + 1)}");
-				Console.WriteLine("Press a key to continue!");
-				Console.ReadKey();
 			}
 			else
 			{
@@ -454,6 +465,14 @@ namespace Prague_Buss_Parking
 			}
 			return -1;
 		}//Just returns the index of the first SOLO MC in the list or returns -1.
+		static bool HasMC(int index)
+		{
+			if (ParkingList[index] != null || !ParkingList[index].Contains("CAR#") || !ParkingList[index].Contains("/") && ParkingList[index].Contains("MC#"))
+			{
+				return true;
+			}
+			return false;
+		}
 		static int IsNull()
 		{
 			for (int i = 0; i < ParkingList.Length; i++)
@@ -468,6 +487,14 @@ namespace Prague_Buss_Parking
 				}
 			}
 			return -1;
+		}//Just returns the index of the first Null in the list or returns -1.
+		static bool IsNull(int index)
+		{
+			if (ParkingList[index] == null)
+			{
+				return true;
+			}
+			return false;
 		}//Just returns the index of the first Null in the list or returns -1.
 		static void ShowAllTickets()
 		{
@@ -487,17 +514,15 @@ namespace Prague_Buss_Parking
 			MainMenu();
 
 		}//Prints out the TicketList and tells how many vehicles there is in the parking area.
-		static bool IsFull(int userInput, out string regNum)
+		static bool IsFull(int userInput)
 		{
 			if (ParkingList[userInput] != null)
 			{
-				if (ParkingList[userInput].StartsWith("CAR#") || ParkingList[userInput].Contains("/"))
+				if (ParkingList[userInput].Contains("CAR#") || ParkingList[userInput].Contains("/"))
 				{
-					regNum = ParkingList[userInput];
 					return true;
 				}
 			}
-			regNum = "false - cant reach!";
 			return false;
 		}//Checks if the SPECIFIC index is occupied by 2 MC or 1 Car
 		static bool GetTicket(out int index)
