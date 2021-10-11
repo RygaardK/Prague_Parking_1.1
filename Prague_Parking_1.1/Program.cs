@@ -250,17 +250,18 @@ namespace Prague_Buss_Parking
 				int number;
 				bool newParking = int.TryParse(Console.ReadLine(), out number);
 				number--;
-				while (IsFull(number) || number >= 99)
-				{
-					Console.Clear();
-					ShowVehicles();
-					Console.WriteLine("If you wanna exit write 100");
-					Console.WriteLine((number + 1) + ": That spot was taken! Choose a new one: (Between 1 - 100");
-					newParking = int.TryParse(Console.ReadLine(), out number);
-				}
 				string myType = VehicleType(userInput);
 				if (myType == "MC#")
 				{
+					string regNum;// Just needed for Car function.
+					while (IsFull(number, out regNum) || number >= 99)
+					{
+						Console.Clear();
+						ShowVehicles();
+						Console.WriteLine("If you wanna exit write 100");
+						Console.WriteLine((number + 1) + ": That spot was taken! Choose a new one: (Between 1 - 100");
+						newParking = int.TryParse(Console.ReadLine(), out number);
+					}
 					if (ParkingList[indexOF].Contains("/"))
 					{
 						string[] vehicle = ParkingList[indexOF].Split(" / ");
@@ -299,6 +300,15 @@ namespace Prague_Buss_Parking
 				}
 				else if (myType == "CAR#")
 				{
+					string regNum;
+					while (IsFull(number, out regNum) || regNum.Contains("MC#") || number >= 99)
+					{
+						Console.Clear();
+						ShowVehicles();
+						Console.WriteLine("If you wanna exit write 100");
+						Console.WriteLine((number + 1) + ": That spot was taken! Choose a new one: (Between 1 - 100");
+						newParking = int.TryParse(Console.ReadLine(), out number);
+					}
 					ParkingList[number] = ParkingList[indexOF];
 					ParkingList[indexOF] = null;
 				}
@@ -477,15 +487,17 @@ namespace Prague_Buss_Parking
 			MainMenu();
 
 		}//Prints out the TicketList and tells how many vehicles there is in the parking area.
-		static bool IsFull(int userInput)
+		static bool IsFull(int userInput, out string regNum)
 		{
 			if (ParkingList[userInput] != null)
 			{
 				if (ParkingList[userInput].StartsWith("CAR#") || ParkingList[userInput].Contains("/"))
 				{
+					regNum = ParkingList[userInput];
 					return true;
 				}
 			}
+			regNum = "false - cant reach!";
 			return false;
 		}//Checks if the SPECIFIC index is occupied by 2 MC or 1 Car
 		static bool GetTicket(out int index)
@@ -516,5 +528,5 @@ namespace Prague_Buss_Parking
 			return -1;
 		}//Checks for a ticket by registration number.
 
-	}
+	}// Har inte gjort så att det stängs av kl 12, samt saknas en ny lista för vehicles med böter i.
 }
