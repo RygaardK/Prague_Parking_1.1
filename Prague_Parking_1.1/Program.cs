@@ -326,12 +326,12 @@ namespace Prague_Buss_Parking
 				string myTime;
 				int myTicket = SearchTicket(userInput, out myTime);
 				DateTime checkInDate = DateTime.Parse(myTime);
+				interval = now - checkInDate;
 				if (VehicleType(userInput) == "MC#")
 				{
 					if (ParkingList[myIndex].Contains("/"))
 					{
 						string[] vehicle = ParkingList[myIndex].Split(" / ");
-						interval = now - checkInDate;
 						if (vehicle[0] == "MC#" + userInput)
 						{
 							ParkingList[myIndex] = vehicle[1];
@@ -341,13 +341,10 @@ namespace Prague_Buss_Parking
 							ParkingList[myIndex] = vehicle[0];
 						}
 						ParkingTicket[myTicket] = null;
-
-
-						Console.WriteLine("Press a key to continue!");
-						Console.ReadKey();
 					}
 					else
 					{
+						ParkingList[myIndex] = null;
 						ParkingTicket[myTicket] = null;
 					}
 				}
@@ -357,7 +354,7 @@ namespace Prague_Buss_Parking
 					ParkingList[myIndex] = null;
 				}
 				Console.WriteLine($"Removing: {userInput}, on: {myIndex + 1}");
-				Console.WriteLine($"You have been parked for: {interval}");
+				Console.WriteLine($"You have been parked for: {interval.ToString(@"dd\.hh\:mm\:ss")}");
 				Console.WriteLine("Press a key to continue!");
 				Console.ReadKey();
 			}
